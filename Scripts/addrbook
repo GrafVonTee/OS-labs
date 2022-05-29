@@ -1,8 +1,167 @@
 #!/bin/bash
 
-addrbook=$2
-if ![[ -f $addrbook ]]; then
-    create_book($addrbook)
-fi
+# я устал... этот bash очень противный, кривой
+# и вообще он не умеет в структуры и массивы!!
+# я оставил это здесь не потому, что я лентяй,
+# который не может писать на bash-е, как настоящий
+# линуксоид, а я просто... не могу уже, написал много
+# кода, но он весь не работает... спасите((((
 
+addrbook=$1
+declare -A Contacts
 
+function check_input_is_not_empty() {
+    echo $1
+    if [[ -z $1 ]]; then
+        echo "Okey, where is your address book?"
+        exit 1
+    fi
+}
+
+function write_contact() {
+    g=($1)
+    fname=${g[0]}
+    sname=${g[1]}
+    email=${g[2]}
+    descr=${g[3]}
+    parse_string="$fname;$sname;$email;$descr"
+    echo $parse_string >> $addrbook
+    echo ""
+}
+
+function write_book() {
+    touch $addrbook
+    for con in ${Contacts[@]}; do
+        write_contact $con
+    done
+}
+
+function create_book() {
+    touch $1
+    addrbook=$1
+    echo "Book was created"
+    echo ""
+}
+
+function delete_book() {
+    read -p "Are you really wanna remove your worthy book??? (y/n) " ans
+    regex='[yY]'
+    if [[ $ans =~ $regex ]]; then
+        rm $addrbook
+        echo "What a Shame..."
+    else
+        echo "Great!!!"
+    fi
+    echo ""
+}
+
+function check_book_exists() {
+    if ! [[ -f $addrbook ]]; then
+        create_book $addrbook
+    fi
+}
+
+function create_contact() {
+    echo ""
+    echo "Enter new contact info:"
+    read -p "First name: " f_name
+    read -p "Second name: " s_name
+    read -p "Email: " email
+    read -p "Short Description: " desc
+    contact=( $f_name $s_name $email $desc )
+    echo $contact
+    Contacts+=( $contact )
+    echo $Contacts
+    write_contact $contact
+}
+
+function check_contact_exists() {
+    for con in $contacts; do
+        if [[ ${con[0]} == $1 ]]; then
+            return true
+        fi
+    done  
+    return false
+}
+
+function print_info_about_contact() {
+    g=($1)
+    fname=${g[0]}
+    sname=${g[1]}
+    email=${g[2]}
+    descr=${g[3]}
+    echo "First Name: " $fname
+    echo "Second Name: " $sname
+    echo "Email: " $email
+    echo "Description: " $descr
+    echo ""
+}
+
+function get_contact_from_input() {
+    read -p "Enter the contact\'s name: " nm
+    for con in ${Contacts[@]}; do
+        if [[ $nm == ${con[0]} ]]; then
+            contact=( $con )
+        fi
+    done
+    if [[ -z $contact ]]; then 
+        echo "Contact is not real!"
+        return false
+    fi    
+    return $contact
+}
+
+function delete_contact() {
+    if ![[ $1 ]]; then return; fi
+    Contacts=( ${Contacts[@]/$delete} )
+    write_contacts
+}
+
+function read_contacts() {
+    IFS=$"\n"
+    for contact in $(cat $addrbook); do
+        IFS=$';'
+        read -r f_name s_name email desc <<< $contact
+        cont=( $f_name $s_name $email $desc )
+        echo $cont
+        Contacts+=( $cont )
+        IFS=$"\n"
+    done
+    IFS=$" \n"
+}
+
+function print_contacts() {
+    i=1
+    for con in ${Contacts[@]}; do
+        echo $i\) ${con[0]} 
+        i=$[ $i+1 ]
+    done
+    echo ""
+}
+
+function read_action() {
+    echo "What are you wanna do?"
+    echo "[1 - get contacts\' names, 2 - create new contact,"
+    echo "[3 - remove contact by name, 4 - get info about one contact by name,"
+    echo "[5 - delete book, 6 - create new book,"
+    echo "[7 - save contacts, 8 - exti and save]"
+    read action
+    case $action in
+        1) print_contacts ;;
+        2) create_contact ;;
+        3) get_contact_from_input | delete_contact ;;
+        4) get_contact_from_input | get_print_info_about_contact ;;
+        5) delete_book ;;
+        6) read -p "Enter your new book name: " book
+           create_book $book ;;
+        7) write_book ;;
+        8) write_book; exit 0 ;;
+        *) ;;
+    esac
+}
+
+# main ???
+check_input_is_not_empty $addrbook
+check_book_exists
+read_contacts
+while true; do read_action; done
