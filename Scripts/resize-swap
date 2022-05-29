@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# Checking the user is root
+if [ $USER != root ]; then
+    echo "Please, run this script as root or using sudo"
+    exit
+fi
+
+# Just formatting
+echo ""
+echo "Write new size of your Swap (like \"1 G\")"
+echo "where: K = Kb, M = Mb, G = Gb"
+echo ""
+echo -n "#: "
+
+# Reading Value
+read NEW_COUNT NEW_SYMBOL
+echo $NEW_COUNT $NEW_SYMBOL
+
+# Checking the value is correct
+reg='^[0-9]+$'
+if ! [[ $NEW_COUNT =~ $reg ]]; then
+    echo "error:" $NEW_COUNT "is noot a positive number" >&2
+    exit 1
+fi
+syms='^[MGK]$'
+if ! [[ $NEW_SYMBOL =~ $syms ]]; then
+    echo "error:" $NEW_SYMBOL "is not a correct format for size" >&2
+    exit 1
+fi
+
+# Calculating (for what?)
+CUR_SIZE_OF_SWAP_IN_KB=$(grep SwapTotal /proc/meminfo | gawk '{print $2}')
+NEW_SIZE=$NEW_COUNT
+reg='^[MG]$'
+if [[ $NEW_SYMBOL =~ $reg ]]; then
+    NEW_SIZE=$[ $NEW_SIZE * 1024 ]
+fi
+if [[ $NEW_SYMBOL == "G" ]]; then
+    NEW_SIZE=$[ $NEW_SIZE * 1024 ]
+fi
+echo "Current size of Swap:" $CUR_SIZE_OF_SWAP_IN_KB
+echo "New size of Swap:" $NEW_SIZE
+echo ""
+
+# Value is too big
+if [[ $NEW_SIZE -ge $[ 1024*1024*64 ] ]]; then
+    echo "pls, stop. do you wanna make your 95puter broken?"
+    echo "Enter less value at the next iteration"
+    exit 1
+fi
+
+# Resizing Swap
+swapoff /swapfile
+dd if=/dev/zero of=/swapfile bs=1$NEW_SYMBOL count=$NEW_COUNT
+chmod 0600 /swapfile
+mkswap /swapfile
+swapon /swapfile
+output=$(grep SwapTotal /proc/meminfo)
+if [ -z $output ]; then
+    echo "OH SHIT STH WENT WRONG!!!!!!"
+    echo "TURN OF YOUR COMPUTER!!!!"
+fi

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+CUR_DIR=$(pwd)
+read DIR FILE
+cd $DIR
+
+filepath=$DIR
+alotofpaths=$(echo $FILE | tr '/' '\n')
+for addr in $alotofpaths; do
+    FILE_LOCATION=$(find * -name $addr)
+    if [[ -z $FILE_LOCATION ]]; then
+        echo "File/Directory" $addr "doesn\'t exist"
+        exit 1
+    fi
+    filepath=$filepath/$FILE_LOCATION
+    if [[ -f $FILE_LOCATION ]]; then
+        break
+    fi
+    cd $FILE_LOCATION
+done
+
+file $filepath
+#echo $filepath
+cd $CUR_DIR
+

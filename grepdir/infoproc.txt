@@ -1,0 +1,7 @@
+271:buddyinfo
+276:cpuinfo
+304:meminfo
+310:pagetypeinfo
+316:slabinfo
+328:vmallocinfo
+330:zoneinfo

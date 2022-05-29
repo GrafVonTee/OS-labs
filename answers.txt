@@ -1,0 +1,91 @@
+# CPU
+01. lscpu
+    cat /proc/cpuinfo
+    a. lscpu | grep "Model name"
+    b. lscpu | grep -E "Core|Thread"
+    c. lscpu | grep -E "CPU ... MHz"
+    d. cat /proc/cpuinfo | grep -E "cache size" | sort -t: -u
+    e. lscpu | grep -E "Arch"
+
+# RAM
+02. RAM -- оперативная память, которая активно используется компьютером во время работы
+    SWAP -- особый файл системы, которые позволяет расширить RAM, складируя данные на диске. Своп позволяет использовать больше активной памяти, чем есть в RAM + в режиме гибернации сохраняет все данные из RAЬ
+03. free -h
+04. in directory Scripts/ ("resize-swap")
+05. sudo dmidecode --type memory
+
+# DISK USAGE
+06. df -h
+07. du -h $HOME
+08. ps aux
+
+# GPU
+09. lspci
+
+# NETWORK
+10. hostname -I
+    ip a
+    ifconfig -a
+11. ifconfig -a | grep ether | gawk '{print $2}'
+
+# PROCESS INFO
+13. ps aux
+    htop
+    top
+
+# SYSTEM ENVIRONMENT
+14. foo="This is a text"
+15. in file "bashrc"
+    PATH=$PATH:$HOME/.bin:$HOME/bin
+16. sudo dnf update
+    sudo yum update
+17. #nothing here
+18. in file "bashrc"
+    alias clr=clear
+19. #easy
+20. #python???
+
+# GREP
+21. a) grep '.zip' binaries.txt
+       grep -i '^..j.r$' /usr/share/dict/words
+    b) grep '.zip' binaries.txt usrbinaries.txt
+    c) grep -Eh ".zip|..f" binaries.txt usrbinaries.txt
+22. -i or --ignore-case
+23. -w or --word-regexp 
+    grep -w "zip" binaries.txt
+24. -v or --invert-match
+    grep --invert-match "[[:upper:]]" /usr/share/dict/words
+25. ls /proc | grep "info" > infoproc.txt
+26. -n or --line-number
+    grep -in '^..j.r$' /usr/share/dict/words
+27. ? - zero OR one matchings
+    . - any symbol
+    * - zero and more matchings
+    | - union of regex-s
+    + - one or more matchings
+    {n,m} - previous symbol is matched from n to m times
+    {n} - EXACTLY n times
+    {n,} - n and more times
+    {,m} - no more than m times
+    ^ - matching at the begin of string
+    $ - matching at the end of string
+    \ - make the next symbol a literal
+    [^...] - negation all symbols inside
+    [] - set of symbols at this position
+    [[:upper:]] - classified set of symbols
+    [A-Z] - set of literals from A to Z
+28. ls -R /lib | grep "\.so$" > libs.txt
+29. grep -Eo '[-\.[:alnum:]]{1,}@[-\.[:alnum:]]{1,}\.[-\.[:alnum:]]{1,}' Emails.csv
+    in all_email2.txt
+30. in file hillary/PATTERNS.txt
+    grep -Eo --file=PATTERNS.txt Emails.csv
+31. ps aux | grep "grafvon+" > grafvonproc.txt 
+
+# Scripts
+44. directory ./Scripts/
+45. hello_world.sh
+46. whereisit
+49. (честно украл с wttr.in)
+51. addrbook
+53. chmod 711 <script_name.sh>
+54. :)
