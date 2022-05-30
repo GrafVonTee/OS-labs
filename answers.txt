@@ -55,7 +55,8 @@
     grep -w "zip" binaries.txt
 24. -v or --invert-match
     grep --invert-match "[[:upper:]]" /usr/share/dict/words
-25. ls /proc | grep "info" > infoproc.txt
+25. ls /proc | grep info > infoproc.txt
+    in Scripts/25task
 26. -n or --line-number
     grep -in '^..j.r$' /usr/share/dict/words
 27. ? - zero OR one matchings

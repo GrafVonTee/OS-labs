@@ -1,0 +1,12 @@
+#!/bin/bash
+
+cur_dir=$(pwd)
+files=$(ls /proc | grep info)
+#IFS=$"\n"
+for file in $files; do
+    cd /proc
+    echo $file
+    cat $file
+    echo ""
+done
+cd $cur_dir
